@@ -350,7 +350,7 @@ class CLoopCloserERD:
 		 		 * If this difference is surpassed then the partition should be
 		 		 * investigated for loop closures using Olson's strategy.
 		 		 */
-				int LC_min_nodeid_diff;
+				size_t LC_min_nodeid_diff;
 				/**\brief Eigenvalues ratio for accepting/rejecting a hypothesis set.
 				 *
 				 * By default this is set to 2.
@@ -674,7 +674,7 @@ class CLoopCloserERD:
 		std::map<std::string, int> m_edge_types_to_nums;
  		/**\brief Keep track of the total number of registered nodes since the last
  		 * time class method was called */
-		int m_last_total_num_of_nodes;
+		size_t m_last_total_num_of_nodes;
 		/**\brief Surpass this to start adding edges */
 		int m_threshold_to_start;
 
