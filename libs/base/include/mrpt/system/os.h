@@ -120,10 +120,10 @@ namespace mrpt
 			/** An OS and compiler independent version of "memcpy"
 			  */
 			void BASE_IMPEXP memcpy(
-				void		*dest,
-				size_t		destSize,
+				void *dest,
+				size_t destSize,
 				const void	*src,
-				size_t		copyCount ) MRPT_NO_THROWS;
+				size_t copyCount) MRPT_NO_THROWS;
 
 			/** An OS-independent version of getch, which waits until a key is pushed.
 			  * \return The pushed key code
@@ -142,7 +142,7 @@ namespace mrpt
 		  * @{ */
 
 		/** Shows the message "Press any key to continue" (or other custom message) to the current standard output and returns when a key is pressed */
-		void BASE_IMPEXP pause(const std::string &msg = std::string("Press any key to continue...") ) MRPT_NO_THROWS;
+		void BASE_IMPEXP pause(const std::string &msg = std::string("Press any key to continue...")) MRPT_NO_THROWS;
 
 		/** Clears the console window */
 		void BASE_IMPEXP clearConsole();
@@ -170,7 +170,23 @@ namespace mrpt
 		  *
 		  * By default the color of "cout" is changed, unless changeStdErr=true, in which case "cerr" is changed.
 		  */
-		void BASE_IMPEXP setConsoleColor( TConsoleColor color, bool changeStdErr=false );
+		void BASE_IMPEXP setConsoleColor(TConsoleColor color, bool changeStdErr=false);
+
+		/** @brief Execute Generic Shell Command
+ 		 *
+ 		 * @param[in]   command Command to execute
+ 		 * @param[out]  output  Pointer to string containing the shell output
+ 		 * @param[in]   mode read/write access
+ 		 *
+ 		 * @return 0 for success, -1 otherwise.
+ 		 *
+ 		 * \note Original code snippet found in http://stackoverflow.com/a/30357710
+ 		 */
+		int BASE_IMPEXP executeCommand(
+				const std::string&  command,
+    		std::string* output=NULL,
+    		const std::string&  mode="r");
+
 
 		/** @} */
 
