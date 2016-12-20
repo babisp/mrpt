@@ -130,8 +130,16 @@ CActionPtr CActionCollection::get(size_t index)
 	if (index>=m_actions.size())
 		THROW_EXCEPTION("Index out of bounds");
 
-	return m_actions[index];
+	return m_actions.at(index);
 }
+
+const CAction& CActionCollection::get(size_t index) const {
+	if (index>=m_actions.size())
+		THROW_EXCEPTION("Index out of bounds");
+
+	return *(m_actions.at(index));
+}
+
 
 
 /*---------------------------------------------------------------
