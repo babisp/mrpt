@@ -5,6 +5,7 @@ define_mrpt_lib_header_only(
 	# Lib name
 	graphs
 	# Dependencies
+	mrpt-opengl
 	mrpt-base
 	)
 
