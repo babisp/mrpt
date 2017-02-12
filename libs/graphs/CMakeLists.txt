@@ -1,7 +1,8 @@
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
-define_mrpt_lib_header_only(
+#define_mrpt_lib_header_only(
+define_mrpt_lib(
 	# Lib name
 	graphs
 	# Dependencies
@@ -11,4 +12,4 @@ define_mrpt_lib_header_only(
 
 IF(BUILD_mrpt-graphs)
 
-ENDIF() 
+ENDIF()
