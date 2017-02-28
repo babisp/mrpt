@@ -405,7 +405,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 	// COccupancyGridMap2D Initialization
 	{
 		mrpt::maps::COccupancyGridMap2DPtr gridmap = mrpt::maps::COccupancyGridMap2D::Create();
-		
+
 		gridmap->setSize(
 				/* min_x = */ -20.0f,
 				/* float max_x = */ 20.0f,
@@ -922,7 +922,7 @@ inline void CGraphSlamEngine<GRAPH_T>::computeMap() const {
 				it = m_nodes_to_laser_scans2D.begin();
 				it != m_nodes_to_laser_scans2D.end(); ++it) {
 
-			TNodeID& curr_node = it->first;
+			const TNodeID& curr_node = it->first;
 			mrpt::obs::CObservation2DRangeScanPtr curr_laser_scan = it->second;
 
 			// TODO - Correct this. Laser scan should exist anyway
