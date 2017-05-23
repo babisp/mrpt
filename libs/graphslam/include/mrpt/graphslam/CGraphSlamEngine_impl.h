@@ -423,8 +423,7 @@ void CGraphSlamEngine<GRAPH_T>::initClass() {
 		// TODO - Read these from the .ini file
 		// observation insertion options
   	gridmap->insertionOptions.maxOccupancyUpdateCertainty = 0.8f;
-
-  	gridmap->insertionOptions.maxDistanceInsertion = 15;
+  	gridmap->insertionOptions.maxDistanceInsertion = 5;
   	gridmap->insertionOptions.wideningBeamsWithDistance = true;
   	gridmap->insertionOptions.decimation = 2;
 
@@ -956,9 +955,7 @@ void CGraphSlamEngine<GRAPH_T>::loadParams(
 	ASSERTMSG_(mrpt::system::fileExists(fname),
 			mrpt::format("\nConfiguration file not found: \n%s\n", fname.c_str()));
 
-	MRPT_LOG_INFO_STREAM << "Reading the .ini file... ";
-
-	CConfigFile cfg_file(fname);
+	MRPT_LOG_INFO_STREAM << "Reading the .ini file... "; CConfigFile cfg_file(fname);
 
 	// Section: GeneralConfiguration
 	// ////////////////////////////////
