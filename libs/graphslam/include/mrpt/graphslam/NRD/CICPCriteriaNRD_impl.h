@@ -148,7 +148,7 @@ bool CICPCriteriaNRD<GRAPH_T>::checkRegistrationCondition2D() {
 	constraint_t rel_edge;
 	mrpt::slam::CICP::TReturnInfo icp_info;
 
-	this->getICPEdge(
+	this->_getICPEdge(
 			*m_last_laser_scan2D,
 			*m_curr_laser_scan2D,
 			&rel_edge,
@@ -274,15 +274,6 @@ void CICPCriteriaNRD<GRAPH_T>::loadParams(const std::string& source_fname) {
 	//m_mahal_distance_ICP_odom.loadFromConfigFileName(source_fname,
 			//"NodeRegistrationDeciderParameters");
 
-	// set the logging level if given by the user
-	CConfigFile source(source_fname);
-	// Minimum verbosity level of the logger
-	int min_verbosity_level = source.read_int(
-			"NodeRegistrationDeciderParameters",
-			"class_verbosity",
-			1, false);
-	this->setMinLoggingLevel(VerbosityLevel(min_verbosity_level));
-	this->logFmt(LVL_DEBUG, "Successfully loaded parameters.");
 	MRPT_END;
 } // end of loadParams
 

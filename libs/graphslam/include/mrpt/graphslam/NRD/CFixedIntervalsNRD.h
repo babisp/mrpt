@@ -43,20 +43,15 @@ namespace mrpt { namespace graphslam { namespace deciders {
  *
  * ### Specifications
  *
- * - Map type: 2D
+ * - Map type: 2D, 3D
  * - MRPT rawlog format: #1, #2
  * - Graph Type: CPosePDFGaussianInf
- * - Observations Used: CObservationOdometry, CActionRobotMovement2D
+ * - Observations Used: CObservationOdometry, CActionRobotMovement2D, CActionRobotMovement3D
  * - Node Registration Strategy: Fixed Odometry Intervals
  *
  * ### .ini Configuration Parameters
  *
  * \htmlinclude graphslam-engine_config_params_preamble.txt
- *
- * - \b class_verbosity
- *   + \a Section       : NodeRegistrationDeciderParameters
- *   + \a Default value : 1 (LVL_INFO)
- *   + \a Required      : FALSE
  *
  * - \b registration_max_distance
  *  + \a Section       : NodeRegistrationDeciderParameters

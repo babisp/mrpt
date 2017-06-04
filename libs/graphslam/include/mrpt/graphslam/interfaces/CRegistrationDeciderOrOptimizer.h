@@ -15,8 +15,12 @@
 #include <mrpt/obs/CObservation.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/COutputLogger.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/graphslam/misc/CWindowManager.h>
 
 #include <string>
@@ -113,6 +117,12 @@ class CRegistrationDeciderOrOptimizer :
 		 * screen in a unified/compact way.
 		 */
 		virtual void printParams() const;
+		/**\brief Read the verbosity level from a specific section of a .ini file.
+		 *
+		 * Utility method for all the derived classes to set this level in a
+		 * consistent manner
+		 */
+		void setVerbosityLevelFromSection(std::string source_fname, std::string section);
 		/**\brief Fill the provided string with a detailed report of the
 		 * decider/optimizer state.
 		 *
@@ -135,9 +145,13 @@ class CRegistrationDeciderOrOptimizer :
 		virtual void setClassName(const std::string& name);
 		bool isMultiRobotSlamClass();
 
+		virtual void initMiscActions() { }
+
 		std::string getClassName() const { return m_class_name; };
 
 	protected:
+		void dumpVisibilityErrorMsg(std::string viz_flag,
+				int sleep_time=500 /* ms */);
 		/**\brief Handy function for making all the visuals assertions in a
 		 * compact manner
 		 */
