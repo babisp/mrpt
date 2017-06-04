@@ -141,7 +141,7 @@ template<class GRAPH_T>
 bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getICPEdge(
 		const mrpt::utils::TNodeID& from,
 		const mrpt::utils::TNodeID& to,
-		constraint_t* rel_edge,
+		mrpt::poses::CPosePDFGaussianInf* rel_edge,
 		mrpt::slam::CICP::TReturnInfo* icp_info,
 		const TGetICPEdgeAdParams* ad_params/*=NULL*/) {
 	MRPT_START;
@@ -149,6 +149,7 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getICPEdge(
 	this->m_time_logger.enter("getICPEdge");
 
 	using namespace mrpt::obs;
+	using namespace mrpt::poses;
 	using namespace mrpt::utils;
 	using namespace std;
 	using namespace mrpt::graphslam::detail;
@@ -178,13 +179,76 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getICPEdge(
 
 	// make use of initial node position difference for the ICP edge
 	// from_node pose
-	pose_t initial_estim;
+	CPose2D initial_estim;
 	if (ad_params) {
-		initial_estim = ad_params->init_estim;
+		initial_estim = CPose2D(ad_params->init_estim);
 	}
 	else {
- 		initial_estim = to_pose - from_pose;
+		initial_estim = CPose2D(to_pose - from_pose);
  	}
+
+	MRPT_LOG_DEBUG_STREAM("from_pose: " << from_pose
+		<< "| to_pose: " << to_pose
+		<< "| init_estim: " << initial_estim);
+
+	this->_getICPEdge(
+			*from_scan, *to_scan, rel_edge, &initial_estim, icp_info);
+	MRPT_LOG_DEBUG_STREAM("*************");
+
+	this->m_time_logger.leave("getICPEdge");
+	return true;
+	MRPT_END;
+} // end of getICPEdge
+
+template<class GRAPH_T>
+bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getICPEdge(
+		const mrpt::utils::TNodeID& from,
+		const mrpt::utils::TNodeID& to,
+		mrpt::poses::CPose3DPDFGaussianInf* rel_edge,
+		mrpt::slam::CICP::TReturnInfo* icp_info,
+		const TGetICPEdgeAdParams* ad_params/*=NULL*/) {
+	MRPT_START;
+	ASSERT_(rel_edge);
+	this->m_time_logger.enter("getICPEdge");
+
+	using namespace mrpt::obs;
+	using namespace mrpt::poses;
+	using namespace mrpt::utils;
+	using namespace std;
+	using namespace mrpt::graphslam::detail;
+
+	// fetch the relevant laser scans and poses of the nodeIDs
+	// If given in the additional params struct, use those values instead of
+	// searching in the class std::map(s)
+	CObservation3DRangeScanPtr from_scan, to_scan;
+	global_pose_t from_pose;
+	global_pose_t to_pose;
+
+	// from-node parameters
+	const node_props_t* from_params = ad_params ? &ad_params->from_params : NULL;
+	bool from_success = this->getPropsOfNodeID(from, &from_pose, from_scan, from_params);
+	// to-node parameters
+	const node_props_t* to_params = ad_params ? &ad_params->to_params : NULL;
+	bool to_success = this->getPropsOfNodeID(to, &to_pose, to_scan, to_params);
+
+
+	if (!from_success || !to_success) {
+		MRPT_LOG_DEBUG_STREAM(
+			"Either node #" << from <<
+			" or node #" << to <<
+			" doesn't contain a valid LaserScan. Ignoring this...");
+		return false;
+	}
+
+	// make use of initial node position difference for the ICP edge
+	// from_node pose
+	CPose3D initial_estim;
+	if (ad_params) {
+		initial_estim = CPose3D(ad_params->init_estim);
+	}
+	else {
+		initial_estim = CPose3D(to_pose - from_pose);
+	}
 
 	MRPT_LOG_DEBUG_STREAM("from_pose: " << from_pose
 		<< "| to_pose: " << to_pose
@@ -220,8 +284,8 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getPropsOfNodeID(
 			filled_pose = true;
 		}
 		// LaserScan
-		if (node_props->scan.present()) {
-			scan = node_props->scan;
+		if (node_props->scan2D.present()) {
+			scan = node_props->scan2D;
 			filled_scan = true;
 		}
 	} // end if node_props
@@ -259,6 +323,65 @@ bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getPropsOfNodeID(
 	return filled_pose && filled_scan;
 } // end of getPropsOfNodeID
 
+template<class GRAPH_T>
+bool CRangeScanEdgeRegistrationDecider<GRAPH_T>::getPropsOfNodeID(
+		const mrpt::utils::TNodeID& nodeID,
+		global_pose_t* pose,
+		mrpt::obs::CObservation3DRangeScanPtr& scan,
+		const node_props_t* node_props/*=NULL*/) const {
+
+	// make sure output instances are valid
+	ASSERT_(pose);
+
+	bool filled_pose = false;
+	bool filled_scan = false;
+
+	if (node_props) {
+		// Pose
+		MRPT_TODO("Use approximatelyEqual instead of !=")
+		if (node_props->pose != global_pose_t()) {
+			*pose = node_props->pose;
+			filled_pose = true;
+		}
+		// LaserScan
+		if (node_props->scan3D.present()) {
+			scan = node_props->scan3D;
+			filled_scan = true;
+		}
+	} // end if node_props
+
+	// TODO - What if the node_props->pose is indeed 0?
+	ASSERTMSG_(!(filled_pose ^ filled_scan),
+			format(
+				"Either BOTH or NONE of the filled_pose, filled_scan should be set."
+				"NodeID:  [%lu]", static_cast<unsigned long>(nodeID)));
+
+	//
+	// fill with class data if not yet available
+	//
+	if (!filled_pose) {
+		// fill with class data if not yet available
+		typename GRAPH_T::global_poses_t::const_iterator search =
+			this->m_graph->nodes.find(nodeID);
+		if (search != this->m_graph->nodes.end()) {
+			*pose = search->second;
+			filled_pose = true;
+		}
+		else {
+			MRPT_LOG_WARN_STREAM("pose not found for nodeID: " << nodeID);
+		}
+	}
+	if (!filled_scan) {
+		typename nodes_to_scans3D_t::const_iterator search =
+			this->m_nodes_to_laser_scans3D.find(nodeID);
+		if (search != this->m_nodes_to_laser_scans3D.end()) {
+			scan = search->second;
+			filled_scan = true;
+		}
+	}
+
+	return filled_pose && filled_scan;
+} // end of getPropsOfNodeID
 
 template<class GRAPH_T>
 void CRangeScanEdgeRegistrationDecider<GRAPH_T>::addScanMatchingEdges(

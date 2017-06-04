@@ -10,6 +10,8 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/utils/TColor.h>
 #include <mrpt/utils/mrpt_stdint.h>
 
@@ -103,7 +105,7 @@ class CRangeScanEdgeRegistrationDecider :
 			}
 		};
 
-		/**\brief Get the ICP Edge between the provided nodes.
+		/**\brief Get the 2D ICP Edge between the provided nodes.
 	 	 *
 	 	 * Handy for not having to manually fetch the laser scans, as the method
 	 	 * takes care of this.
@@ -120,7 +122,28 @@ class CRangeScanEdgeRegistrationDecider :
 		virtual bool getICPEdge(
 				const mrpt::utils::TNodeID& from,
 				const mrpt::utils::TNodeID& to,
-				constraint_t* rel_edge,
+				mrpt::poses::CPosePDFGaussianInf* rel_edge,
+				mrpt::slam::CICP::TReturnInfo* icp_info=NULL,
+				const TGetICPEdgeAdParams* ad_params=NULL
+				);
+		/**\brief Get the 3D ICP Edge between the provided nodes.
+		 *
+		 * Handy for not having to manually fetch the laser scans, as the method
+		 * takes care of this.
+		 *
+		 * \param[out] icp_info Struct that will be filled with the results of the
+		 * ICP operation
+		 *
+		 * \param[in] ad_params Pointer to additional parameters in the getICPEdge call
+		 *
+		 * \return True if operation was successful, false otherwise (e.g. if the
+		 * either of the nodes' CObservation3DRangeScan object does not contain
+		 * valid data.
+		 */
+		virtual bool getICPEdge(
+				const mrpt::utils::TNodeID& from,
+				const mrpt::utils::TNodeID& to,
+				mrpt::poses::CPose3DPDFGaussianInf* rel_edge,
 				mrpt::slam::CICP::TReturnInfo* icp_info=NULL,
 				const TGetICPEdgeAdParams* ad_params=NULL
 				);
@@ -138,7 +161,7 @@ class CRangeScanEdgeRegistrationDecider :
 		virtual bool fillNodePropsFromGroupParams(
 				const mrpt::utils::TNodeID& nodeID,
 				const std::map<mrpt::utils::TNodeID, node_props_t>& group_params,
-					node_props_t* node_props);
+				node_props_t* node_props);
 		/**\brief Fill the pose and LaserScan for the given nodeID.
 		 *
 		 * Pose and LaserScan are either fetched from the TNodeProps struct, if it
@@ -151,6 +174,19 @@ class CRangeScanEdgeRegistrationDecider :
 				const mrpt::utils::TNodeID& nodeID,
 				global_pose_t* pose,
 				mrpt::obs::CObservation2DRangeScanPtr& scan,
+				const node_props_t* node_props=NULL) const;
+		/**\brief Fill the pose and LaserScan for the given nodeID.
+		 *
+		 * Pose and LaserScan are either fetched from the TNodeProps struct, if it
+		 * contains valid data, otherwise from the corresponding class vars
+		 *
+		 * \return True if operation was successful and pose, scan contain valid
+		 * data.
+		 */
+		virtual bool getPropsOfNodeID(
+				const mrpt::utils::TNodeID& nodeID,
+				global_pose_t* pose,
+				mrpt::obs::CObservation3DRangeScanPtr& scan,
 				const node_props_t* node_props=NULL) const;
 
 		virtual void notifyOfWindowEvents(

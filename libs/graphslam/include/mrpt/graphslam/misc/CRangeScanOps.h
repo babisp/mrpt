@@ -101,7 +101,7 @@ class CRangeScanOps {
 	void _getICPEdge(
 			const mrpt::obs::CObservation2DRangeScan& from,
 			const mrpt::obs::CObservation2DRangeScan& to,
-			constraint_t* rel_edge,
+			mrpt::poses::CPosePDFGaussianInf* rel_edge,
 			const mrpt::poses::CPose2D* initial_pose=NULL,
 			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
 	/**\brief Align the 3D range scans provided and find the potential edge that
@@ -113,7 +113,7 @@ class CRangeScanOps {
 	void _getICPEdge(
 			const mrpt::obs::CObservation3DRangeScan& from,
 			const mrpt::obs::CObservation3DRangeScan& to,
-			constraint_t* rel_edge,
+			mrpt::poses::CPose3DPDFGaussianInf* rel_edge,
 			const mrpt::poses::CPose3D* initial_pose=NULL,
 			mrpt::slam::CICP::TReturnInfo* icp_info=NULL);
 	/**\brief Reduce the size of the given CPointsMap by keeping one out of

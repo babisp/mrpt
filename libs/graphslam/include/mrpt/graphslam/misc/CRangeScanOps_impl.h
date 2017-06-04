@@ -16,7 +16,7 @@ template<class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::_getICPEdge(
 		const mrpt::obs::CObservation2DRangeScan& from,
 		const mrpt::obs::CObservation2DRangeScan& to,
-		constraint_t* rel_edge,
+		mrpt::poses::CPosePDFGaussianInf* rel_edge,
 		const mrpt::poses::CPose2D* initial_pose_in/* = NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info/* = NULL */) {
 	MRPT_START;
@@ -55,7 +55,7 @@ template<class GRAPH_T>
 void CRangeScanOps<GRAPH_T>::_getICPEdge(
 		const mrpt::obs::CObservation3DRangeScan& from,
 		const mrpt::obs::CObservation3DRangeScan& to,
-		constraint_t* rel_edge,
+		mrpt::poses::CPose3DPDFGaussianInf* rel_edge,
 		const mrpt::poses::CPose3D* initial_pose_in /* =NULL */,
 		mrpt::slam::CICP::TReturnInfo* icp_info /* =NULL */) {
 	MRPT_START;
