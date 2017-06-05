@@ -38,14 +38,13 @@ struct TNodeProps {
 		else {
 			*str += "Scan2D: NONE";
 		}
-		// TODO CObservation3DRangeScan does not implement getScanSize()
-		// *str += "\t";
-		// if (this->scan3D.present()) {
-		// 	*str += mrpt::format("Scan3D #%lu", this->scan3D->getScanSize());
-		// }
-		// else {
-		// 	*str += "Scan3D: NONE";
-		// }
+		*str += "\t";
+		if (this->scan3D.present()) {
+			*str += mrpt::format("Scan3D #%lu", this->scan3D->getScanSize());
+		}
+		else {
+			*str += "Scan3D: NONE";
+		}
 		*str += "\n";
 	}
 	std::string getAsString() const {
